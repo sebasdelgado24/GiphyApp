@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<title>My Giphy App</title>
+<style type="text/css">
+button,
+div,
+form,
+input {
+  margin: 10px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+ <h1>Giphy Search</h1>
+
+ <!--Giphys will get dumped here-->
+ <div id="buttons-view"></div>
+<form id="query-form">
+    <label for="query-input">Add a Query!</label>
+    <input type="text" id="query-input">
+    <br>
+
+<!--Button triggers new Giphy to be added-->
+<input id="add-query" type="submit" value="Add a Query">
+</form>
+
+<!--Giphys will get dumped here-->
+<div id="queries-view"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+//initial array of giphys
+var queries = ["Audi","Mercedes","Porsche","Lamborghini"];
+
+//diaplayQueryInfo function re-renders the HTML to diaplay the appropiate content
+function displayQueryInfo(){
+
+var query = $(this).attr("data-name");
+var queryURL = "https://api.giphy.com/v1/gifs/search?q="+ query + "&api_key=s2PVe3c6W9nANCrZ7KZZd6DuGXxv65A9&limit=8";
+
+//Creating an AJAX call for the specific movie button being clicked
+$.ajax({
+  url: queryURL,
+  method: "GET"
+}).then(function(response) {
+
+//Console log to test it
+console.log(query);
+
+//Creating a div to hold the giphy
+var queryDiv = $("<div class='query'>");
+
+//Storing the rating data
+var rating = response.Rated;
+
+//Creating an element to have the rating displayed
+var pOne = $("<p>").text("Rating: " + rating);
+
+//Displaying the rating
+queryDiv.append(pOne);
+
+//Storing the title data
+var title = response.Title;
+
+//Creating an element to hold the title data
+var pTwo = $("p").text("Title: " + title);
+
+//Displaying the title data
+queryDiv.append(pTwo);
+
+//Retrieving the URL for the image or saving the image_original_url property
+var imgURL = response.data.image_original_url;
+
+//Creating and storing an element to hold the image
+var image = $("<img>").attr("src",imgURL);
+
+//Appending the image
+queryDiv.append(image);
+
+//Putting the entire giphy above the previous giphys
+$("#queries-view").prepend(queryDiv);
+});
+
+}
+
+//Function for displaying giphy data
+function renderButtons() {
+
+//Deleting the giphys prior to adding the new giphys
+//necessary so I will not have repeat buttons
+
+$("#buttons-view").empty();
+
+//Looping through the array of giphys
+for (var i = 0; 1 < queries.lenght; i++) {
+
+//Then dinamicale generating buttons for each giphy in the array
+//This code $("<button>") is all jQuery needs to create the biginning and end tag (<buton></button>)
+var a = $("<button>");
+//Adding a class of giphy-btn to our button
+a.addClass("query-btn");
+//Adding a data-attribute
+a.attr("data-name", queries[i]);
+//Providing the initial button text
+a.text(queries[i]);
+//Chaining jQuery
+const button2 = $("<button>").addClass('query-btn')
+                      .attr('data-name', queries[i])
+                      .text(queries[i]);
+//Adding the button to the buttons-view div
+$("#buttons-view").append(a);
+}
+}
+//This function handles events where a giphy movie button is clicked
+$("#add-query").on("click", function(event) {
+event.preventDefault();
+//This line grabs the input from the textbox
+var query = $("#query-input").val().trim();
+//Adding giphy from textbox to our array
+queries.push(query);
+//Calling renderButtons wich handles the processing of our giphy array
+renderButtons();
+});
+//Adding a click event listener to all elements with a class of "query-btn"
+$(document).on("click", "query-btn", displayQueryInfo);
+
+//Calling the renderButtons function to display the initial buttons
+renderButtons();
+</script>
+</div>
+</body>
+
+</html>
