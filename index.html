@@ -40,86 +40,90 @@ var queries = ["Audi","Mercedes","Porsche","Lamborghini"];
 //diaplayQueryInfo function re-renders the HTML to diaplay the appropiate content
 function displayQueryInfo(){
 
-var query = $(this).attr("data-name");
-var queryURL = "https://api.giphy.com/v1/gifs/search?q="+ query + "&api_key=s2PVe3c6W9nANCrZ7KZZd6DuGXxv65A9&limit=8";
+  var query = $("#query-input").val();
+  //Console log to test it. 
+  // console.log(query);
+  // var query = $("#query-input").val().attr("data-name");
+  var queryURL = "https://api.giphy.com/v1/gifs/search?q="+ query + "&api_key=s2PVe3c6W9nANCrZ7KZZd6DuGXxv65A9&limit=8";
+  console.log(queryURL)
+  //Creating an AJAX call for the specific movie button being clicked
+  $.ajax({
+    url: queryURL,
+    method: "GET"
+  }).then(function(response) {
+    console.log(response)
+  
 
-//Creating an AJAX call for the specific movie button being clicked
-$.ajax({
-  url: queryURL,
-  method: "GET"
-}).then(function(response) {
+    //Creating a div to hold the giphy
+    var queryDiv = $("<div class='query'>");
 
-//Console log to test it
-console.log(query);
+    //Storing the rating data
+    var rating = response.Rated;
 
-//Creating a div to hold the giphy
-var queryDiv = $("<div class='query'>");
+    //Creating an element to have the rating displayed
+    var pOne = $("<p>").text("Rating: " + rating);
 
-//Storing the rating data
-var rating = response.Rated;
+    //Displaying the rating
+    queryDiv.append(pOne);
 
-//Creating an element to have the rating displayed
-var pOne = $("<p>").text("Rating: " + rating);
+    //Storing the title data
+    var title = response.Title;
 
-//Displaying the rating
-queryDiv.append(pOne);
+    //Creating an element to hold the title data
+    var pTwo = $("p").text("Title: " + title);
 
-//Storing the title data
-var title = response.Title;
+    //Displaying the title data
+    queryDiv.append(pTwo);
 
-//Creating an element to hold the title data
-var pTwo = $("p").text("Title: " + title);
+    //Retrieving the URL for the image or saving the image_original_url property
+    var imgURL = response.data.image_original_url;
 
-//Displaying the title data
-queryDiv.append(pTwo);
+    //Creating and storing an element to hold the image
+    var image = $("<img>").attr("src",imgURL);
 
-//Retrieving the URL for the image or saving the image_original_url property
-var imgURL = response.data.image_original_url;
+    //Appending the image
+    queryDiv.append(image);
 
-//Creating and storing an element to hold the image
-var image = $("<img>").attr("src",imgURL);
-
-//Appending the image
-queryDiv.append(image);
-
-//Putting the entire giphy above the previous giphys
-$("#queries-view").prepend(queryDiv);
-});
+    //Putting the entire giphy above the previous giphys
+    $("#queries-view").prepend(queryDiv);
+  });
 
 }
 
 //Function for displaying giphy data
 function renderButtons() {
 
-//Deleting the giphys prior to adding the new giphys
-//necessary so I will not have repeat buttons
+    //Deleting the giphys prior to adding the new giphys
+    //necessary so I will not have repeat buttons
 
-$("#buttons-view").empty();
+    $("#buttons-view").empty();
 
-//Looping through the array of giphys
-for (var i = 0; 1 < queries.lenght; i++) {
+    //Looping through the array of giphys
+    for (var i = 0; 1 < queries.lenght; i++) {
 
-//Then dinamicale generating buttons for each giphy in the array
-//This code $("<button>") is all jQuery needs to create the biginning and end tag (<buton></button>)
-var a = $("<button>");
-//Adding a class of giphy-btn to our button
-a.addClass("query-btn");
-//Adding a data-attribute
-a.attr("data-name", queries[i]);
-//Providing the initial button text
-a.text(queries[i]);
-//Chaining jQuery
-const button2 = $("<button>").addClass('query-btn')
-                      .attr('data-name', queries[i])
-                      .text(queries[i]);
-//Adding the button to the buttons-view div
-$("#buttons-view").append(a);
-}
+    //Then dinamicale generating buttons for each giphy in the array
+    //This code $("<button>") is all jQuery needs to create the biginning and end tag (<buton></button>)
+    var a = $("<button>");
+    //Adding a class of giphy-btn to our button
+    a.addClass("query-btn");
+    //Adding a data-attribute
+    a.attr("data-name", queries[i]);
+    //Providing the initial button text
+    a.text(queries[i]);
+    //Chaining jQuery
+    const button2 = $("<button>").addClass('query-btn')
+                          .attr('data-name', queries[i])
+                          .text(queries[i]);
+    //Adding the button to the buttons-view div
+    $("#buttons-view").append(a);
+    }
 }
 //This function handles events where a giphy movie button is clicked
 $("#add-query").on("click", function(event) {
+//the following line prevents the page from refreshing 
 event.preventDefault();
 //This line grabs the input from the textbox
+//*trim removes the spaces on each side of the input section
 var query = $("#query-input").val().trim();
 //Adding giphy from textbox to our array
 queries.push(query);
@@ -127,7 +131,16 @@ queries.push(query);
 renderButtons();
 });
 //Adding a click event listener to all elements with a class of "query-btn"
-$(document).on("click", "query-btn", displayQueryInfo);
+// $(document).on("click", "query-btn", displayQueryInfo) {
+
+// };
+$("#add-query").on("click", function() {
+  console.log("click")
+  displayQueryInfo();
+
+
+})
+  
 
 //Calling the renderButtons function to display the initial buttons
 renderButtons();
